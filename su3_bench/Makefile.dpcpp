@@ -1,0 +1,45 @@
+#
+# VENDOR = intel | intel-anl | nvidia
+VENDOR = nvidia
+
+CFLAGS = -O3 -ffast-math
+INCLUDES = -DITERATIONS=100
+DEPENDS = mat_nn_dpcpp.hpp su3.hpp lattice.hpp
+ifdef USE_SYCL
+  INCLUDES += -DUSE_SYCL
+else
+  INCLUDES += -DUSE_DPCPP
+endif
+
+ifeq ($(VENDOR),nvidia)
+  CC = clang++
+  DEPENDS += mat_nn_sycl.hpp
+  CFLAGS += -fsycl -fsycl-targets=nvptx64-nvidia-cuda-sycldevice -Wno-unknown-cuda-version
+  # ARCH = V100 | A100
+  ifeq ($(ARCH),A100)
+    CFLAGS += -Xsycl-target-backend '--cuda-gpu-arch=sm_80'
+  else
+    CFLAGS += -Xsycl-target-backend '--cuda-gpu-arch=sm_70'
+  endif
+else  # intel
+  CC = dpcpp
+  CFLAGS += -fsycl
+  ifeq ($(VENDOR),intel-anl)
+    # As of now, ANL's isntance of OneAPI DPCPP doesn't support native complex arythemtic,
+    # as a workarround we use our own COMPLEX structure (-DMILC_COMPLEX).
+    INCLUDES += -DMILC_COMPLEX
+  endif
+endif
+
+# 32-bit float
+bench_f32_dpcpp.exe: su3_nn_bench.cpp $(DEPENDS)
+	$(CC) $(CFLAGS) $(INCLUDES) -DPRECISION=1 su3_nn_bench.cpp -o $@ $(LIBS)
+
+# 64-bit float
+bench_f64_dpcpp.exe: su3_nn_bench.cpp $(DEPENDS)
+	$(CC) $(CFLAGS) $(INCLUDES) su3_nn_bench.cpp -o $@ $(LIBS)
+
+all: bench_f32_dpcpp.exe bench_f64_dpcpp.exe 
+
+clean:
+	rm -rf *.exe

@@ -1,0 +1,64 @@
+#
+# Vendor can be nvidia | intel | amd
+ifndef VENDOR
+  VENDOR = nvidia
+endif
+# Compiler can be clang | pgi | cray
+ifndef COMPILER
+  COMPILER = clang
+endif
+# USE_VERSION = 0 | 1 | 2 | 3 | 4
+VERSION=0
+ifdef VERSION
+  DEFINES = -DUSE_VERSION=$(VERSION)
+endif
+
+DEFINES += -DUSE_OPENMP
+DEPENDS = su3.hpp lattice.hpp mat_nn_openmp.hpp
+
+ifeq ($(VENDOR),nvidia)
+  # ARCH = V100 | A100
+  ifeq ($(COMPILER),pgi)
+    CC = nvc++
+    CFLAGS = -fast -mp=gpu -gpu=cc70
+  else ifeq ($(COMPILER),cray) # Cray 9.x or later
+    CC = CC
+    CFLAGS = -O3 -fopenmp -fopenmp-targets=nvptx64 -Xopenmp-target=nvptx64 -march=sm_70
+    DEFINES += -DMILC_COMPLEX
+  else
+    CC = clang++
+    CFLAGS = -O3
+    CFLAGS += -fopenmp -fopenmp-targets=nvptx64-nvidia-cuda
+    CFLAGS += -Rpass=openmp-opt -Rpass-missed=openmp-opt -Rpass-analysis=openmp-opt
+    ifeq ($(ARCH),A100)
+      CFLAGS += -Xopenmp-target=nvptx64-nvidia-cuda -march=sm_80
+    endif
+    DEFINES += -DMILC_COMPLEX
+  endif
+else ifeq ($(VENDOR),intel)
+  CC = icpx
+  CFLAGS = -fiopenmp -fopenmp-targets=spir64
+  DEFINES += -DMILC_COMPLEX
+else ifeq ($(VENDOR),amd)
+  CC = clang++
+  CFLAGS = -O3
+  CFLAGS += -fopenmp -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa
+  # ARCH = MI60 | MI100
+  ifeq ($(ARCH),MI100)
+    CFLAGS += -march=gfx908
+  else
+    CFLAGS += -march=gfx906
+  endif
+  DEFINES += -DMILC_COMPLEX
+endif 
+
+bench_f32_openmp.exe: su3_nn_bench.cpp $(DEPENDS)
+	$(CC) $(CFLAGS) -DPRECISION=1 $(DEFINES) -o $@ su3_nn_bench.cpp $(LIBS)
+
+bench_f64_openmp.exe: su3_nn_bench.cpp $(DEPENDS)
+	$(CC) $(CFLAGS) $(DEFINES) -o $@ su3_nn_bench.cpp $(LIBS)
+
+all: bench_f64_openmp.exe bench_f32_openmp.exe
+
+clean:
+	rm -f *openmp.exe

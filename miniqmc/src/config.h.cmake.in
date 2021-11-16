@@ -1,0 +1,118 @@
+/* src/ohmms-config.h.in.  Generated from configure.in by autoheader.  */
+// -*- c++  -*-
+//
+//Ohmms Configuration Header. Automatically Generated
+//
+//See the LICENSE file in the top-level directory for copyright notices
+//
+#ifndef QMCPLUSPLUS_CONFIGURATION_H
+#define QMCPLUSPLUS_CONFIGURATION_H
+
+// clang-format off
+
+/* define the major version */
+#define QMCPACK_VERSION_MAJOR  @QMCPACK_VERSION_MAJOR@
+
+/* define the minor version */
+#define QMCPACK_VERSION_MINOR  @QMCPACK_VERSION_MINOR@
+
+/* define the patch version */
+#define QMCPACK_VERSION_PATCH  @QMCPACK_VERSION_PATCH@
+
+/* define the release version */
+#cmakedefine QMCPACK_RELEASE  @QMCAPCK_RELEASE@
+
+/* define the git last commit date */
+// #cmakedefine QMCPLUSPLUS_LAST_CHANGED_DATE  "@QMCPLUSPLUS_LAST_CHANGED_DATE@"
+
+/* Enable OpenMP parallelization. */
+#cmakedefine ENABLE_OPENMP @ENABLE_OPENMP@
+
+/* Enable OpenMP offload. */
+#cmakedefine ENABLE_OFFLOAD @ENABLE_OFFLOAD@
+
+#ifdef ENABLE_OFFLOAD
+  #define PRAGMA_OFFLOAD(x) _Pragma(x)
+#else
+  #define PRAGMA_OFFLOAD(x)
+#endif
+
+/* Enable OpenMP taskloop. */
+#cmakedefine ENABLE_OMP_TASKLOOP @ENABLE_OMP_TASKLOOP@
+
+#ifdef ENABLE_OMP_TASKLOOP
+  #define PRAGMA_OMP_TASKLOOP(x) _Pragma(x)
+#else
+  #define PRAGMA_OMP_TASKLOOP(x) _Pragma("omp taskgroup")
+#endif
+
+/* Enable CUDA acceleration. */
+#cmakedefine QMC_ENABLE_CUDA @QMC_ENABLE_CUDA@
+
+/* Enable ROCM acceleration. */
+#cmakedefine QMC_ENABLE_ROCM @QMC_ENABLE_ROCM@
+
+/* Enable ONEAPI acceleration. */
+#cmakedefine QMC_ENABLE_ONEAPI @QMC_ENABLE_ONEAPI@
+
+/* Define to 1 if you have the `hdf5' library (-lhdf5). */
+#cmakedefine HAVE_LIBHDF5 @HAVE_LIBHDF5@
+
+/* Define to 1 if you want to use parallel hdf5 for frequent output */
+#cmakedefine ENABLE_PHDF5 @ENABLE_PHDF5@
+
+/* Define to 1 if you have MPI library */
+#cmakedefine HAVE_MPI @HAVE_MPI@
+
+/* Define the physical dimension of appliation. */
+#cmakedefine OHMMS_DIM @OHMMS_DIM@
+
+/* Define the index type: int, long */
+#cmakedefine OHMMS_INDEXTYPE @OHMMS_INDEXTYPE@
+
+/* Define the base precision: float, double */
+#cmakedefine OHMMS_PRECISION @OHMMS_PRECISION@
+
+/* Define the full precision: double, long double */
+#cmakedefine OHMMS_PRECISION_FULL @OHMMS_PRECISION_FULL@
+
+/* Define Cache/SIMD alignment in bytes */
+#cmakedefine QMC_SIMD_ALIGNMENT @QMC_SIMD_ALIGNMENT@
+
+/* Define to 1 if precision is mixed, only for the CPU code */
+#cmakedefine MIXED_PRECISION @MIXED_PRECISION@
+
+/* Define to 1 if complex wavefunctions are used */
+#cmakedefine QMC_COMPLEX @QMC_COMPLEX@
+
+/* Define if the code is specialized for orthorhombic supercell */
+#define OHMMS_ORTHO @OHMMS_ORTHO@
+
+/* Define if sincos function exists */
+#cmakedefine HAVE_SINCOS @HAVE_SINCOS@
+
+/* Define if posix_memalign function exists */
+#cmakedefine HAVE_POSIX_MEMALIGN @HAVE_POSIX_MEMALIGN@
+
+/* Find essl library */
+#cmakedefine HAVE_ESSL @HAVE_ESSL@
+
+/* Fund acml library */
+#cmakedefine HAVE_ACML @HAVE_ACML@
+
+/* For AFQMC compilation  */
+#cmakedefine BUILD_AFQMC @BUILD_AFQMC@
+
+/* For FCIQMC compilation  */
+#cmakedefine BUILD_FCIQMC @BUILD_FCIQMC@
+
+/* Internal timers */
+#cmakedefine ENABLE_TIMERS @ENABLE_TIMERS@
+
+/* Use VTune Task API with timers */
+#cmakedefine USE_VTUNE_TASKS @USE_VTUNE_TASKS@
+
+// clang-format on
+
+#endif // QMCPLUSPLUS_CONFIGURATION_H
+

@@ -1,0 +1,18 @@
+#
+CC = syclcc
+CFLAGS = -O3 -Wno-unused-result
+INCLUDES = -DUSE_SYCL -DHIPSYCL
+DEPENDS = su3.hpp lattice.hpp mat_nn_sycl.hpp
+
+# 32-bit float
+bench_f32_hipsycl.exe: su3_nn_bench.cpp $(DEPENDS)
+	$(CC) $(CFLAGS) $(INCLUDES) -DPRECISION=1 su3_nn_bench.cpp -o $@ $(LIBS)
+
+# 64-bit float
+bench_f64_hipsycl.exe: su3_nn_bench.cpp $(DEPENDS)
+	$(CC) $(CFLAGS) $(INCLUDES) su3_nn_bench.cpp -o $@ $(LIBS)
+
+all: bench_f32_hipsycl.exe bench_f64_hipsycl.exe
+
+clean:
+	rm -rf *.exe

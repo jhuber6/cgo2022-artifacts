@@ -1,0 +1,67 @@
+KOKKOS_PATH = ${HOME}/Kokkos/upstream/kokkos
+SRC = su3_nn_bench.cpp
+KOKKOS_DEVICES=Cuda
+#KOKKOS_DEVICES=OpenMPTarget
+
+
+default: build
+	echo "Start Build"
+
+CXXFLAGS= -O3 -g
+LINKFLAGS=
+
+# ARCH = V100 | A100
+ifeq ($(ARCH),A100)
+	KOKKOS_ARCH = AMPERE80
+else
+	KOKKOS_ARCH = VOLTA70
+endif
+
+
+CXXFLAGS+= -DUSE_KOKKOS
+ifeq ($(KOKKOS_DEVICES),Cuda)
+	KOKKOS_CUDA_OPTIONS=enable_lambda
+	CXX = $(KOKKOS_PATH)/bin/nvcc_wrapper
+	KOKKOS_CXX_STANDARD=c++14
+	EXE32 = bench_f32_kokkos_cuda.exe
+	EXE64 = bench_f64_kokkos_cuda.exe
+else
+	KOKKOS_CXX_STANDARD=c++17
+	CXX = clang++
+	# To avoid warnings
+	CXXFLAGS += -Wno-unknown-cuda-version -Wno-undefined-internal -Wno-pass-failed -Wno-openmp-mapping -Wno-extra-tokens
+	LINKFLAGS +=-Wno-unknown-cuda-version
+	EXE32 = bench_f32_kokkos_ompt.exe
+	EXE64 = bench_f64_kokkos_ompt.exe
+endif
+
+DEPENDS = su3.hpp lattice.hpp mat_nn_kokkos.hpp
+
+LINK = ${CXX}
+
+DEPFLAGS = -M
+
+OBJ32= $(SRC:.cpp=.o)
+OBJ64= $(SRC:.cpp=.o)
+LIB =
+
+include $(KOKKOS_PATH)/Makefile.kokkos
+
+build: $(EXE32) $(EXE64)
+
+$(EXE32): $(OBJ32) $(KOKKOS_LINK_DEPENDS)
+	$(LINK) $(KOKKOS_LDFLAGS) $(LINKFLAGS) $(EXTRA_PATH) $(OBJ32) $(KOKKOS_LIBS) $(LIB) -o $(EXE32)
+
+$(EXE64): $(OBJ64) $(KOKKOS_LINK_DEPENDS)
+	$(LINK) $(KOKKOS_LDFLAGS) $(LINKFLAGS) $(EXTRA_PATH) $(OBJ64) $(KOKKOS_LIBS) $(LIB) -o $(EXE64)
+
+# Compilation rules
+
+$(OBJ32):$(SRC) $(KOKKOS_CPP_DEPENDS) $(DEPENDS)
+	$(CXX) -DPRECISION=1 $(KOKKOS_CPPFLAGS) $(KOKKOS_CXXFLAGS) $(CXXFLAGS) $(EXTRA_INC) -c $<
+
+$(OBJ64):$(SRC) $(KOKKOS_CPP_DEPENDS) $(DEPENDS)
+	$(CXX) $(KOKKOS_CPPFLAGS) $(KOKKOS_CXXFLAGS) $(CXXFLAGS) $(EXTRA_INC) -c $<
+
+clean: kokkos-clean
+	rm -f *.o *kokkos*.exe

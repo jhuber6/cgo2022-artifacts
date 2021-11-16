@@ -1,0 +1,23 @@
+#
+# depends on a Cuda module being loaded
+CC = nvcc -ccbin g++ -m64 --x cu
+CFLAGS = -O3
+# ARCH = V100 | A100
+ifeq ($(ARCH),A100)
+  CFLAGS += -gencode arch=compute_80,code=sm_80
+else
+  CFLAGS += -gencode arch=compute_70,code=sm_70
+endif
+INCLUDES = -DUSE_CUDA #-DMILC_COMPLEX
+DEPENDS = su3.hpp lattice.hpp mat_nn_cuda.hpp
+
+bench_f32_cuda.exe: su3_nn_bench.cpp $(DEPENDS)
+	$(CC) $(CFLAGS) $(INCLUDES) -DPRECISION=1 -o $@ su3_nn_bench.cpp $(LIBS)
+
+bench_f64_cuda.exe: su3_nn_bench.cpp $(DEPENDS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ su3_nn_bench.cpp $(LIBS)
+
+all: bench_f64_cuda.exe bench_f32_cuda.exe
+
+clean:
+	rm -f *cuda.exe

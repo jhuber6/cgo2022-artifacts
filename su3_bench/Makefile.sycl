@@ -1,0 +1,29 @@
+# Codeplay's ComputeCpp SYCL compiler
+# Target can be spirv64 | ptx64
+#   spirv64 uses the POCL (or other SPIR-V compaible) OpenCL library
+#   ptx64 targets the Nvidia driver directly
+ifndef TARGET
+  TARGET = spirv64
+endif
+CC = compute++ -sycl-driver -sycl-target $(TARGET) -no-serial-memop -ffast-math
+CFLAGS = -O3
+LIBS = -lComputeCpp -lOpenCL
+DEFINES = -DUSE_SYCL
+DEPENDS = su3.hpp lattice.hpp mat_nn_sycl.hpp
+
+ifeq ($(TARGET),ptx64)
+  CFLAGS += -I$(CUDA_ROOT)/include -L$(CUDA_ROOT)/lib64
+endif
+
+# 32-bit float
+bench_f32_sycl.exe: su3_nn_bench.cpp $(DEPENDS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEFINES) -DPRECISION=1 su3_nn_bench.cpp -o $@ $(LIBS)
+
+# 64-bit float
+bench_f64_sycl.exe: su3_nn_bench.cpp $(DEPENDS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEFINES) su3_nn_bench.cpp -o $@ $(LIBS)
+
+all: bench_f32_sycl.exe bench_f64_sycl.exe
+
+clean:
+	rm -rf *sycl.exe
