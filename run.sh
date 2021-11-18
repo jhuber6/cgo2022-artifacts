@@ -24,4 +24,4 @@ nvprof ./bench_f32_openmp.exe 2>&1
 nvprof ./bench_f32_cuda.exe 2>&1
 
 cd $ROOT/miniqmc/build
-env OMP_NUM_THREADS=10 nvprof ./bin/check_spo_batched -m 2 -g "2 2 1" -w 80 -n 1
+nvprof env OMP_NUM_THREADS=10 ./bin/check_spo_batched -m 2 -g "2 2 1" -w 80 -n 1

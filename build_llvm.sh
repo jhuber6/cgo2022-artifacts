@@ -2,6 +2,8 @@
 
 set -e
 
+ROOT=$(realpath $(dirname $0))
+
 # -- LLVM BUILD REQUIREMENTS --
 # CMake     >=3.12.3
 # GCC       >=5.1.0
@@ -22,18 +24,18 @@ export PROJECTS="clang"
 
 # -- INSTALLATION DIRECTORY --
 # where the compiler and libraries will be installed
-export PREFIX=$HOME/clang
+export PREFIX=${ROOT}/clang
 
 # -- BUILD DIRECTORY --
 # where the compiler source will be checked out and built
-export BUILD_DIR=$PWD
+export BUILD_DIR=${ROOT}
 export LLVM_SRC=${BUILD_DIR}/llvm-project/llvm/
 
 
 export GCC=$(which gcc)
 export GCC_DIR=${GCC%/bin/gcc}
 
-export THREADS=64
+export THREADS=
 
 CMAKE_OPTIONS=" \
     -DLLVM_ENABLE_PROJECTS=${PROJECTS}                              \
