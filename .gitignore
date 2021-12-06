@@ -1,3 +1,7 @@
 llvm-project/
+RSBench/cuda/rsbench
+RSBench/openmp-offload/rsbench
+XSBench/cuda/XSBench
+XSBench/openmp-offload/XSBench
 *.o
 *~

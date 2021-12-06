@@ -59,11 +59,10 @@ sleep 1
 mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR}
 if [ -d ${BUILD_DIR}/llvm-project ]; then
     cd llvm-project
-    git checkout '29a3e3dd7bed'
+    git checkout 'release/12.x'
 else
-    git clone -b 'main' 'https://github.com/llvm/llvm-project.git'
+    git clone -b 'release/12.x' 'https://github.com/llvm/llvm-project.git'
     cd llvm-project
-    git checkout '29a3e3dd7bed'
 fi
 
 # Create install directory if it doesn't exist
