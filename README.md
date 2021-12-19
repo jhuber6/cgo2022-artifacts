@@ -35,12 +35,6 @@ V100 gpus with LLVM OpenMP offloading.
     from scratch should take under and hour.
   - Publicly available?: Yes.
 
-### How to access
-
-Our benchmarks and associated helper scripts for this artifact are available on
-Github (https://github.com/jhuber6/cgo2022-artifacts).
-
-
 ### Hardware dependencies
 
 Our benchmarks were run on an Nvidia V100 GPU, whose compute capability is
@@ -50,7 +44,7 @@ functional offloading via the CUDA RTL.
 ### Software dependencies
 
 Building and running all the benchmarks requires an up-to-date CUDA installation (We
-used version 11.0), at least CMake version 3.17, and a BLAS/LAPACK library in
+used version 11.0), libelf, at least CMake version 3.17, and a BLAS/LAPACK library in
 addition to the standard dependencies for building LLVM.
 
 ## Installation

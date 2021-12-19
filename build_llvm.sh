@@ -59,11 +59,9 @@ sleep 1
 mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR}
 if [ -d ${BUILD_DIR}/llvm-project ]; then
     cd llvm-project
-    git checkout '29a3e3dd7bed'
 else
-    git clone -b 'main' 'https://github.com/llvm/llvm-project.git'
-    cd llvm-project
-    git checkout '29a3e3dd7bed'
+  echo "Archived LLVM 13 source not found"
+  return 1
 fi
 
 # Create install directory if it doesn't exist

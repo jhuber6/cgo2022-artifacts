@@ -29,7 +29,7 @@ export PREFIX=${ROOT}/clang
 # -- BUILD DIRECTORY --
 # where the compiler source will be checked out and built
 export BUILD_DIR=${ROOT}
-export LLVM_SRC=${BUILD_DIR}/llvm-project/llvm/
+export LLVM_SRC=${BUILD_DIR}/llvm-project12/llvm/
 
 
 export GCC=$(which gcc)
@@ -57,12 +57,11 @@ sleep 1
 
 # Checkout clang from git repository or pull if it already exists
 mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR}
-if [ -d ${BUILD_DIR}/llvm-project ]; then
+if [ -d ${BUILD_DIR}/llvm-project12 ]; then
     cd llvm-project
-    git checkout 'release/12.x'
 else
-    git clone -b 'release/12.x' 'https://github.com/llvm/llvm-project.git'
-    cd llvm-project
+  echo "Archived LLVM 12 source not found"
+  return 1
 fi
 
 # Create install directory if it doesn't exist

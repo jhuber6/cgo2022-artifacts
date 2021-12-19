@@ -1,7 +1,9 @@
-llvm-project/
+llvm-project/build
+llvm-project12/build
 RSBench/cuda/rsbench
 RSBench/openmp-offload/rsbench
 XSBench/cuda/XSBench
 XSBench/openmp-offload/XSBench
 *.o
 *~
+clang/
